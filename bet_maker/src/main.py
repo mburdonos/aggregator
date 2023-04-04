@@ -1,10 +1,10 @@
-import uvicorn
 import logging
-from fastapi import FastAPI, Request
-from fastapi.responses import ORJSONResponse, JSONResponse
 
+import uvicorn
 from api.v1 import endpoint
 from core.config import settings
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse, ORJSONResponse
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,5 +31,8 @@ app.include_router(endpoint.router, prefix="/api/v1/endpoint", tags=["endpoint"]
 
 if __name__ == "__main__":
     uvicorn.run(
-        "main:app", host=settings.bet_marker.host, port=settings.bet_marker.port, reload=True
+        "main:app",
+        host=settings.bet_marker.host,
+        port=settings.bet_marker.port,
+        reload=True,
     )
