@@ -1,7 +1,7 @@
 import logging
 
 import uvicorn
-from api.v1 import endpoint
+from api.v1 import events, bet
 from core.config import settings
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, ORJSONResponse
@@ -27,7 +27,8 @@ async def shutdown():
     logging.info("Closed connections")
 
 
-app.include_router(endpoint.router, prefix="/api/v1/endpoint", tags=["endpoint"])
+app.include_router(events.router, prefix="/api/v1/events", tags=["Events"])
+app.include_router(bet.router, prefix="/api/v1", tags=["Bet"])
 
 if __name__ == "__main__":
     uvicorn.run(

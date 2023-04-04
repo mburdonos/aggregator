@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: storage_bet
+    env_file:
+      - .env
+    hostname: ${STORAGE_BET__HOST}
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=${STORAGE_BET__DBNAME}
+    expose:
+      - ${STORAGE_BET__PORT}

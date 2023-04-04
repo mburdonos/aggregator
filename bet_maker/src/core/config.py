@@ -13,8 +13,15 @@ class BetMarker(BaseSettings):
     port: int
 
 
+class StorageBet(BaseSettings):
+    dbname: str
+    host: str
+    port: int
+
+
 class Settings(BaseSettings):
     bet_marker: BetMarker
+    storage_bet: StorageBet
 
     class Config:
         env_file = (os.path.join(ENV_DIR, ".env"), os.path.join(ENV_DIR, ".env.dev"))
