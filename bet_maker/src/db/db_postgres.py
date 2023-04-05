@@ -1,31 +1,20 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncEngine
+from typing import Optional
+from sqlalchemy import insert
 
-from core.config import settings
+# переменная хранит объект подключения после чего передачи
+pg_connection: Optional[AsyncEngine] = None
+
+
+async def get_cache_conn() -> Optional[AsyncEngine]:
+    """Вернуть подключение к redis, если оно создано, иначе None."""
+    return pg_connection
 
 
 class DbPostgres:
-    def __init__(self, host: str, port: int, dbname: str):
-        self.driver: str = "postgresql+asyncpg"
-        self.host = host
-        self.port = port
-        self.dbname = dbname
-        self.connection = None
+    def __init__(self, pg_connection: AsyncEngine):
+        self.pg_connection = pg_connection
 
-    async def connect(self):
-        self.connection = create_async_engine(f"{self.driver}://{settings.postgres.host}:{settings.postgres.port}/{settings.postgres.dbname}")
-
-# db_uri = (
-#     "postgresql+asyncpg://"
-#     f"{settings.postgres.user}:{settings.postgres.password}@"
-#     f"{settings.postgres.host}:{settings.postgres.port}/"
-#     f"{settings.postgres.dbname}"
-# )
-# db = create_async_engine(db_uri)
-# async_session = sessionmaker(db, expire_on_commit=False, class_=AsyncSession)
-#
-# db_session = scoped_session(async_session)
-#
-# Base = declarative_base()
-# Base.query = db_session.query_property()
+    async def insert_data(self, model, data):
+        for row in await self.pg_connection.execute(insert(model).values(**data).returning(model.id)):
+            return row[0]

@@ -9,7 +9,10 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=${STORAGE_BET__USER}
+      - POSTGRES_PASSWORD=${STORAGE_BET__PASSWORD}
       - POSTGRES_DB=${STORAGE_BET__DBNAME}
+    ports:
+      - "5432:5432"
     expose:
       - ${STORAGE_BET__PORT}

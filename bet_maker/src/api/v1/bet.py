@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from models.bet_data import BetData
+from services.bet import BetService, bet_service
 
 router = APIRouter()
 
@@ -9,8 +11,9 @@ router = APIRouter()
     description="Записывает, переданную ставку в базу, и изменяет её состояние в зависимости от поступающих событий.",
     response_description="Возвращает уникальный идентификатор ставки.",
 )
-async def set_bet() -> bool:
-    return True
+async def set_bet(bet: BetData, service: BetService = Depends(bet_service)) -> str:
+    result = await service.set_bet(bet)
+    return "ident"
 
 
 @router.get(

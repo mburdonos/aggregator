@@ -16,6 +16,8 @@ class BetMarker(BaseSettings):
 class StorageBet(BaseSettings):
     dbname: str
     host: str
+    user: str
+    password: str
     port: int
 
 

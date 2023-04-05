@@ -5,6 +5,8 @@ from api.v1 import events, bet
 from core.config import settings
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, ORJSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from db import db_postgres
 
 logging.basicConfig(level=logging.INFO)
 
@@ -19,11 +21,16 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
+    db_postgres.pg_connection = create_async_engine(
+        f"postgresql+asyncpg://{settings.storage_bet.user}:{settings.storage_bet.password}@{settings.storage_bet.host}:{settings.storage_bet.port}/{settings.storage_bet.dbname}",
+    echo=True
+    )
     logging.info("Create connections")
 
 
 @app.on_event("shutdown")
 async def shutdown():
+    await db_postgres.pg_connection.close()
     logging.info("Closed connections")
 
 
