@@ -17,12 +17,15 @@ class BetService(DbPostgres):
         super().__init__(pg_connection)
 
     async def set_bet(self, bet: BetData) -> Optional[int]:
-        bet_id = await self.insert_data(model=Bet, data=bet)
+        bet_id = await self.insert_data(model=Bet, data=bet.dict())
         if bet_id:
             await self.pg_connection.commit()
             return bet_id
         return None
 
+    async def get_bet_id(self, bet_id: int) -> Optional[Bet]:
+        data = await self.get_data_from_id(model=Bet, id=bet_id)
+        return data
 
 async def bet_service(
     pg_connection: AsyncEngine = Depends(get_cache_conn),
