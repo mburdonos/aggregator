@@ -6,7 +6,8 @@ from core.config import settings
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from db import db_postgres
+from db import db_postgres, aio_session
+from aiohttp import ClientSession
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,12 +26,14 @@ async def startup():
         f"postgresql+asyncpg://{settings.storage_bet.user}:{settings.storage_bet.password}@{settings.storage_bet.host}:{settings.storage_bet.port}/{settings.storage_bet.dbname}",
     echo=True
     )
+    aio_session.aio_client = ClientSession()
     logging.info("Create connections")
 
 
 @app.on_event("shutdown")
 async def shutdown():
     await db_postgres.pg_connection.close()
+    await aio_session.aio_client.close()
     logging.info("Closed connections")
 
 

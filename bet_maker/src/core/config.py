@@ -12,6 +12,11 @@ class BetMarker(BaseSettings):
     host: str
     port: int
 
+class LineProvider(BaseSettings):
+    project_name: str
+    host: str
+    port: int
+
 
 class StorageBet(BaseSettings):
     dbname: str
@@ -23,6 +28,7 @@ class StorageBet(BaseSettings):
 
 class Settings(BaseSettings):
     bet_marker: BetMarker
+    line_provider: LineProvider
     storage_bet: StorageBet
 
     class Config:

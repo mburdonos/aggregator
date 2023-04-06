@@ -42,5 +42,9 @@ async def get_history_bets(bet_id: str, service: BetService = Depends(bet_servic
     description="Получает все данные о ставках, которые были совершены ранее.",
     response_description="Возвращает данные, содержащие информацию о ставках: их идентификаторы и текущие статусы.",
 )
-async def get_history_bets(service: BetService = Depends(bet_service)) -> bytes:
-    return True
+async def get_history_bets(service: BetService = Depends(bet_service)) -> list:
+    data_all = await service.get_all()
+    return [{
+        "id": data.id, "date_insert": data.date_insert, "date_update": data.date_update,
+        "event_id": data.event_id, "money": data.money, "result": data.result
+    } for data in data_all]

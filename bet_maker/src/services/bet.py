@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from models.bet import Bet
 from models.bet_data import BetData
-from sqlalchemy import select, insert
 
 from fastapi import Depends
 
@@ -27,12 +26,15 @@ class BetService(DbPostgres):
         data = await self.get_data_from_id(model=Bet, id=bet_id)
         return data
 
+    async def get_all(self) -> Optional[Bet]:
+        data = await self.get_all_data(model=Bet)
+        return [row[0] for row in data]
+
 async def bet_service(
     pg_connection: AsyncEngine = Depends(get_cache_conn),
 ) -> BetService:
     async_session = sessionmaker(
         pg_connection, expire_on_commit=False, class_=AsyncSession
     )
-    db_session = scoped_session(async_session)
-    # async with pg_connection.begin() as conn:
-    return BetService(db_session)
+    async with async_session.begin() as conn:
+        yield BetService(conn)
