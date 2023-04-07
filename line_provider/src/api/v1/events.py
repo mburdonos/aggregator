@@ -1,13 +1,14 @@
 import time
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Depends
-from db.aio_session import AioSession
 from aiohttp import ClientSession
+from db.aio_session import AioSession
+from fastapi import APIRouter, Depends, HTTPException
 from models.events import Event, events
 
 router = APIRouter()
 # , aio_client: ClientSession = Depends(get_aio_client)
+
 
 @router.put("")
 async def create_event(event: Event) -> str:

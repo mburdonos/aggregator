@@ -1,11 +1,11 @@
-from aiohttp import ClientSession
-from typing import Optional
-from core.config import settings
-from urllib.parse import urljoin
 from http import HTTPStatus
-from fastapi import HTTPException
 from json import loads
+from typing import Optional
+from urllib.parse import urljoin
 
+from aiohttp import ClientSession
+from core.config import settings
+from fastapi import HTTPException
 
 aio_client: Optional[ClientSession] = None
 
@@ -15,10 +15,11 @@ async def get_aio_client() -> Optional[ClientSession]:
 
 
 class AioSession:
-
     def __init__(self, aio_client: ClientSession):
         self.aio_client = aio_client
-        self.base_url = f"http://{settings.line_provider.host}:{settings.line_provider.port}"
+        self.base_url = (
+            f"http://{settings.line_provider.host}:{settings.line_provider.port}"
+        )
 
     async def execute_get(self, path: str = None):
         url_path = urljoin(self.base_url, path)

@@ -3,8 +3,8 @@ import logging
 import uvicorn
 from api.v1 import events
 from core.config import settings
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, ORJSONResponse
+from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 
 logging.basicConfig(level=logging.INFO)
 

@@ -1,13 +1,13 @@
 import logging
 
 import uvicorn
-from api.v1 import events, bet
+from aiohttp import ClientSession
+from api.v1 import bet, events
 from core.config import settings
+from db import aio_session, db_postgres
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from db import db_postgres, aio_session
-from aiohttp import ClientSession
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,7 +24,7 @@ app = FastAPI(
 async def startup():
     db_postgres.pg_connection = create_async_engine(
         f"postgresql+asyncpg://{settings.storage_bet.user}:{settings.storage_bet.password}@{settings.storage_bet.host}:{settings.storage_bet.port}/{settings.storage_bet.dbname}",
-    echo=True
+        echo=True,
     )
     aio_session.aio_client = ClientSession()
     logging.info("Create connections")

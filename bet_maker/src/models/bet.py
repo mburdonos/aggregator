@@ -1,5 +1,4 @@
 import orjson
-
 from models.base_bet import BaseBet
 from sqlalchemy import Column, Float, String
 

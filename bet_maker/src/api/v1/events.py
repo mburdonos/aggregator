@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from services.events import events_service, EventsService
+from services.events import EventsService, events_service
 
 router = APIRouter()
 

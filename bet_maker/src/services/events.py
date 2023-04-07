@@ -1,7 +1,8 @@
 from functools import lru_cache
 from typing import Optional
-from db.aio_session import get_aio_client, AioSession
+
 from aiohttp import ClientSession
+from db.aio_session import AioSession, get_aio_client
 from fastapi import Depends
 
 
@@ -12,7 +13,7 @@ class EventsService(AioSession):
         super().__init__(aio_client)
 
     async def get_events(self) -> dict:
-        data = await self.execute_get(path='/api/v1/events')
+        data = await self.execute_get(path="/api/v1/events")
         return data
 
 
