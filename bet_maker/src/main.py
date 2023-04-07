@@ -43,7 +43,7 @@ app.include_router(bet.router, prefix="/api/v1", tags=["Bet"])
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host=settings.bet_marker.host,
-        port=settings.bet_marker.port,
+        host=settings.bet_maker.host,
+        port=settings.bet_maker.port,
         reload=True,
     )

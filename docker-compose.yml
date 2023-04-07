@@ -1,6 +1,32 @@
 version: '3'
 
 services:
+  bet_maker:
+      build:
+        context: bet_maker
+        dockerfile: Dockerfile
+      image: bet_maker:latest
+      container_name: bet_maker
+      restart: always
+      depends_on:
+        - postgres
+      ports:
+        - "8001:8001"
+      env_file:
+        - ./.env
+
+  line_provider:
+      build:
+        context: line_provider
+        dockerfile: Dockerfile
+      image: line_provider:latest
+      container_name: line_provider
+      restart: always
+      ports:
+        - "8002:8002"
+      env_file:
+        - ./.env
+
   postgres:
     container_name: storage_bet
     env_file:

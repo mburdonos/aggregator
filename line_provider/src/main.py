@@ -17,16 +17,6 @@ app = FastAPI(
 )
 
 
-@app.on_event("startup")
-async def startup():
-    logging.info("Create connections")
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    logging.info("Closed connections")
-
-
 app.include_router(events.router, prefix="/api/v1/events", tags=["events"])
 
 if __name__ == "__main__":

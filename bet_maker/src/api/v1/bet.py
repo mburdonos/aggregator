@@ -5,12 +5,15 @@ from fastapi.responses import JSONResponse
 from models.bet_data import BetData
 from services.bet import BetService, bet_service
 from typing import Optional
+from models.events import Event
+from utils.check_bet import check_bet_result
+import asyncio
 import orjson
 
 router = APIRouter()
 
 
-@router.post(
+@router.put(
     "/bet",
     summary="Совершает ставку на событие.",
     description="Записывает, переданную ставку в базу, и изменяет её состояние в зависимости от поступающих событий.",
@@ -48,3 +51,19 @@ async def get_history_bets(service: BetService = Depends(bet_service)) -> list:
         "id": data.id, "date_insert": data.date_insert, "date_update": data.date_update,
         "event_id": data.event_id, "money": data.money, "result": data.result
     } for data in data_all]
+
+
+
+@router.post(
+    "/bet/update",
+    summary="Обновление результата ставки.",
+    description="Получение новых данных по событию и изменение статуса текущих ставок.",
+    response_description="Возвращает статус изменения.",
+)
+async def set_bet(event: Event, service: BetService = Depends(bet_service)) -> str:
+    if event.state.name == "NEW":
+        return "skip"
+    data = await service.get_bet_by_event_id(event.event_id)
+    new_data = check_bet_result(data=data, event=event)
+    await service.update_bet_id(data=new_data)
+    return "success"
