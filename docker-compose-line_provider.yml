@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  storage_line_provider:
+    container_name: storage_line_provider
+    env_file:
+      - .env
+    hostname: ${STORAGE_PROVIDER__HOST}
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${STORAGE_PROVIDER__USER}
+      - POSTGRES_PASSWORD=${STORAGE_PROVIDER__PASSWORD}
+      - POSTGRES_DB=${STORAGE_PROVIDER__DBNAME}
+    ports:
+      - "5432:5432"
+    expose:
+      - ${STORAGE_PROVIDER__PORT}

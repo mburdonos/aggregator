@@ -1,26 +1,33 @@
 import time
 from pathlib import Path
 
-from aiohttp import ClientSession
 from db.aio_session import AioSession
 from fastapi import APIRouter, Depends, HTTPException
-from models.events import Event, events
+from models.api.events import EventApi, events
+from services.events import event_service, EventService
 
 router = APIRouter()
 # , aio_client: ClientSession = Depends(get_aio_client)
 
 
 @router.put("")
-async def create_event(event: Event) -> str:
-    if event.event_id not in events:
-        events[event.event_id] = event
-        return "success"
+async def create_event(
+        event: EventApi,
+        service_event: EventService = Depends(event_service),
+) -> str:
 
-    for p_name, p_value in event.dict(exclude_unset=True).items():
-        setattr(events[event.event_id], p_name, p_value)
+    # TODO проверить наличия события по id
+    if event.id:
+        if await service_event.get_event(event.id):
+            return "success"
 
-    session = AioSession()
-    await session.execute_post(data=event.json(), path="/api/v1/bet/update")
+    await service_event.insert_event(event)
+
+    # for p_name, p_value in event.dict(exclude_unset=True).items():
+    #     setattr(events[event.event_id], p_name, p_value)
+
+    # session = AioSession()
+    # await session.execute_post(data=event.json(), path="/api/v1/bet/update")
 
     return "success"
 

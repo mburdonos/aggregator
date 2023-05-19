@@ -19,9 +19,18 @@ class LineProvider(BaseSettings):
     port: int
 
 
+class StorageProvider(BaseSettings):
+    dbname: str
+    host: str
+    user: str
+    password: str
+    port: int
+
+
 class Settings(BaseSettings):
     bet_maker: BetMaker
     line_provider: LineProvider
+    storage_provider: StorageProvider
 
     class Config:
         env_file = (os.path.join(ENV_DIR, ".env"), os.path.join(ENV_DIR, ".env.dev"))

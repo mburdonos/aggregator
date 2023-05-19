@@ -1,12 +1,8 @@
-import asyncio
-import json
 from typing import Optional
 
-import orjson
 from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
 from models.bet_data import BetData
-from models.events import Event
+from models.storage.events import Event
 from services.bet import BetService, bet_service
 from utils.check_bet import check_bet_result
 

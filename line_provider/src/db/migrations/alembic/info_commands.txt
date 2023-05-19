@@ -1,0 +1,5 @@
+create migrations
+alembic revision --autogenerate -m 'name migrations'
+
+execute migrations
+alembic upgrade head

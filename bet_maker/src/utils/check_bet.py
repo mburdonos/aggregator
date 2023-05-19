@@ -1,5 +1,5 @@
 from models.bet import Bet
-from models.events import Event
+from models.storage.events import Event
 
 
 def check_bet_result(data: list[Bet], event: Event) -> list[Bet]:
