@@ -1,38 +1,55 @@
+import json
 import time
 from pathlib import Path
 
-from aiohttp import ClientSession
 from db.aio_session import AioSession
 from fastapi import APIRouter, Depends, HTTPException
-from models.events import Event, events
+from models.api.events import EventApi, events
+from services.events import event_service, EventService
+from core.config import settings
+from models.storage.events import Event
+from broker.message_broker import RabbitMQBroker, get_rabbitmq
 
 router = APIRouter()
 # , aio_client: ClientSession = Depends(get_aio_client)
 
 
 @router.put("")
-async def create_event(event: Event) -> str:
-    if event.event_id not in events:
-        events[event.event_id] = event
-        return "success"
+async def create_event(
+        event: EventApi,
+        service_event: EventService = Depends(event_service),
+        broker: RabbitMQBroker = Depends(get_rabbitmq)
+) -> str:
+    if event.id:
+        event_by_id = await service_event.get_event_by_id(event.id)
+        if event_by_id:
+            for k, v in event_by_id.dict().items():
+                if event.__getattribute__(k) != v:
+                    await service_event.update_event(val=event.__getattribute__(k), id=event.id, key=k)
+            return "event has been updated"
 
-    for p_name, p_value in event.dict(exclude_unset=True).items():
-        setattr(events[event.event_id], p_name, p_value)
+        await service_event.insert_event(event)
 
-    session = AioSession()
-    await session.execute_post(data=event.json(), path="/api/v1/bet/update")
+        await broker.produce(message=event.json(), queue_name=settings.rabbitmq.queue_events)
+        # session = AioSession()
+        # await session.execute_post(data=event.json(), path="/api/v1/bet/update")
 
-    return "success"
+        return "success insert event"
 
 
 @router.get("/{event_id}")
-async def get_event(event_id: str = Path(default=None)):
-    if event_id in events:
-        return events[event_id]
-
+async def get_event(
+        event_id: int,
+        service_event: EventService = Depends(event_service),
+        ) -> EventApi:
+    if event_id:
+        curr_event = await service_event.get_event_by_id(id=event_id)
+        if curr_event:
+            return curr_event
     raise HTTPException(status_code=404, detail="Event not found")
 
 
 @router.get("")
-async def get_events():
-    return list(e for e in events.values() if time.time() < e.deadline)
+async def get_events(service_event: EventService = Depends(event_service)) -> list[EventApi]:
+    all_events = await service_event.get_events()
+    return all_events

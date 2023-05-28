@@ -1,14 +1,10 @@
-import asyncio
-import json
 from typing import Optional
 
-import orjson
 from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
 from models.bet_data import BetData
 from models.events import Event
 from services.bet import BetService, bet_service
-from utils.check_bet import check_bet_result
+from services.cache import CacheService, cache_service
 
 router = APIRouter()
 
@@ -20,7 +16,8 @@ router = APIRouter()
     response_description="Возвращает уникальный идентификатор ставки.",
 )
 async def set_bet(
-    bet: BetData, service: BetService = Depends(bet_service)
+    bet: BetData,
+    service: BetService = Depends(bet_service)
 ) -> Optional[int]:
     id_bet = await service.set_bet(bet)
     return id_bet
@@ -73,10 +70,14 @@ async def get_history_bets(service: BetService = Depends(bet_service)) -> list:
     description="Получение новых данных по событию и изменение статуса текущих ставок.",
     response_description="Возвращает статус изменения.",
 )
-async def set_bet(event: Event, service: BetService = Depends(bet_service)) -> str:
-    if event.state.name == "NEW":
+async def set_bet(
+        event: Event,
+        service: BetService = Depends(bet_service),
+        cache_services: CacheService = Depends(cache_service),
+) -> str:
+    if event.state_id.name == "NEW":
+        await cache_services.put_event(event)
         return "skip"
-    data = await service.get_bet_by_event_id(event.event_id)
-    new_data = check_bet_result(data=data, event=event)
-    await service.update_bet_id(data=new_data)
-    return "success"
+    result = await service.update_bets(event)
+    await cache_services.delete_event_by_id(event.state_id.value)
+    return result

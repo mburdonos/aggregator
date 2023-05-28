@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  storage_line_provider:
+    container_name: storage_line_provider
+    env_file:
+      - .env
+    hostname: ${STORAGE_PROVIDER__HOST}
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${STORAGE_PROVIDER__USER}
+      - POSTGRES_PASSWORD=${STORAGE_PROVIDER__PASSWORD}
+      - POSTGRES_DB=${STORAGE_PROVIDER__DBNAME}
+    ports:
+      - "5433:5432"
+    expose:
+      - ${STORAGE_PROVIDER__PORT}
+
+  rabbitmq:
+    env_file:
+      - .env
+    container_name: rabbitmq
+    hostname: ${RABBITMQ__HOST}
+    image: rabbitmq:3.11-management
+    restart:
+      always
+    expose:
+      - ${RABBITMQ__PORT}
+      - "15672"
+    ports:
+      - "15672:15672"
+      - ${RABBITMQ__PORT}:${RABBITMQ__PORT}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ__USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ__PASSWORD}
