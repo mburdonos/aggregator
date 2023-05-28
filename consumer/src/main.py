@@ -29,7 +29,6 @@ async def main():
         async with ClientSession() as aio_session:
             await broker.consumer(settings.rabbitmq.queue_events)
             while True:
-                # broker.message = None
                 broker.message = await broker.listen_queue()
                 if broker.message.body:
                     response = await aio_session.post(
@@ -41,7 +40,7 @@ async def main():
                         await broker.confirm_message()
                     else:
                         await broker.not_confirm_message()
-                await asyncio.sleep(5)
+                await asyncio.sleep(10)
 
 
 asyncio.run(main())
