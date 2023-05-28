@@ -1,4 +1,5 @@
-import decimal
+from decimal import Decimal
+from datetime import datetime
 import enum
 from typing import Optional
 
@@ -11,8 +12,13 @@ class EventState(enum.Enum):
     FINISHED_LOSE = 3
 
 
+# class Event(BaseModel):
+#     id: int
+#     coefficient: Optional[decimal.Decimal] = None
+#     deadline: Optional[int] = None
+#     state: Optional[EventState] = None
 class Event(BaseModel):
-    event_id: str
-    coefficient: Optional[decimal.Decimal] = None
-    deadline: Optional[int] = None
-    state: Optional[EventState] = None
+    id: int
+    coefficient: Decimal
+    deadline: datetime
+    state_id: EventState

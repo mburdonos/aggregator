@@ -1,10 +1,11 @@
 from pydantic import BaseModel, Field, validator
+from decimal import Decimal
 
 
 class BetData(BaseModel):
-    event_id: str
-    money: float = Field(gt=0)
+    event_id: int
+    money: Decimal = Field(gt=0)
 
     @validator("money")
     def check_money(cls, money):
-        return round(money, 2)
+        return money.quantize(Decimal("1.00"))

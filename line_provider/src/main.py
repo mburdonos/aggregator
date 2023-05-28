@@ -6,6 +6,7 @@ from core.config import settings
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from broker.message_broker import get_rabbitmq
 
 from db import storage
 
@@ -25,12 +26,16 @@ async def startup():
         f"postgresql+asyncpg://{settings.storage_provider.user}:{settings.storage_provider.password}@{settings.storage_provider.host}:{settings.storage_provider.port}/{settings.storage_provider.dbname}",
         echo=True,
     )
+    rabbitmq = get_rabbitmq()
+    await rabbitmq.connect()
     logging.info("Create connections")
 
 
 @app.on_event("shutdown")
 async def shutdown():
     await storage.pg_engine.close()
+    rabbitmq = get_rabbitmq()
+    await rabbitmq.close()
     logging.info("Closed connections")
 
 app.include_router(events.router, prefix="/api/v1/events", tags=["events"])

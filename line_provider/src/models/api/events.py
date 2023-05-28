@@ -11,12 +11,13 @@ class EventState(BaseModel):
 
 
 class EventApi(BaseModel):
-    __tablename__ = "events"
-
     id: Optional[int]
     coefficient: Decimal
     deadline: datetime
     state_id: int
+
+    def __str__(self):
+        return self.id
 
 events = None
 # events: dict[str, Event] = {

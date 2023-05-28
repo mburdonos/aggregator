@@ -3,29 +3,15 @@ import os
 
 from pydantic import BaseSettings
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ENV_DIR = os.path.join(BASE_DIR, "..", "..")
-
 
 class BetMaker(BaseSettings):
     project_name: str
     host: str
     port: int
-
-
-class LineProvider(BaseSettings):
-    project_name: str
-    host: str
-    port: int
-
-
-class StorageProvider(BaseSettings):
-    dbname: str
-    host: str
-    user: str
-    password: str
-    port: int
-
+    protocol: str = "http"
+    path_event_url: str = "/api/v1/bet/update"
 
 class RabbitMq(BaseSettings):
     host: str
@@ -37,8 +23,6 @@ class RabbitMq(BaseSettings):
 
 class Settings(BaseSettings):
     bet_maker: BetMaker
-    line_provider: LineProvider
-    storage_provider: StorageProvider
     rabbitmq: RabbitMq
 
     class Config:

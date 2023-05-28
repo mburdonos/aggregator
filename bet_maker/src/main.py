@@ -1,10 +1,11 @@
 import logging
 
 import uvicorn
+from redis import asyncio as aioredis
 from aiohttp import ClientSession
 from api.v1 import bet, events
 from core.config import settings
-from db import aio_session, db_postgres
+from db import aio_session, db_postgres, db_cache
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -27,6 +28,11 @@ async def startup():
         echo=True,
     )
     aio_session.aio_client = ClientSession()
+    db_cache.cache = await aioredis.Redis(
+        host="localhost", port=settings.cache_bet.port, decode_responses=True
+    )
+    # redis.exceptions.ConnectionError
+    assert await db_cache.cache.ping()
     logging.info("Create connections")
 
 
@@ -34,6 +40,9 @@ async def startup():
 async def shutdown():
     await db_postgres.pg_connection.close()
     await aio_session.aio_client.close()
+    if db_cache.cache:
+        db_cache.cache.close()
+        await db_cache.cache.wait_closed()
     logging.info("Closed connections")
 
 
