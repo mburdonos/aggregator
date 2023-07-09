@@ -16,8 +16,7 @@ router = APIRouter()
     response_description="Возвращает уникальный идентификатор ставки.",
 )
 async def set_bet(
-    bet: BetData,
-    service: BetService = Depends(bet_service)
+    bet: BetData, service: BetService = Depends(bet_service)
 ) -> Optional[int]:
     id_bet = await service.set_bet(bet)
     return id_bet
@@ -29,9 +28,7 @@ async def set_bet(
     description="Получает данные о ставки по идентификатору.",
     response_description="Возвращает данные, содержащие информацию о ставках: их идентификаторы и текущие статусы.",
 )
-async def get_history_bets(
-    bet_id: str, service: BetService = Depends(bet_service)
-) -> dict:
+async def get_bet_id(bet_id: str, service: BetService = Depends(bet_service)) -> dict:
     data = await service.get_bet_id(bet_id=int(bet_id))
     return {
         "id": data.id,
@@ -71,13 +68,13 @@ async def get_history_bets(service: BetService = Depends(bet_service)) -> list:
     response_description="Возвращает статус изменения.",
 )
 async def set_bet(
-        event: Event,
-        service: BetService = Depends(bet_service),
-        cache_services: CacheService = Depends(cache_service),
+    event: Event,
+    service: BetService = Depends(bet_service),
+    cache_services: CacheService = Depends(cache_service),
 ) -> str:
     if event.state_id.name == "NEW":
         await cache_services.put_event(event)
         return "skip"
     result = await service.update_bets(event)
-    await cache_services.delete_event_by_id(event.state_id.value)
+    await cache_services.delete_event_by_id(event.id)
     return result

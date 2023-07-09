@@ -1,6 +1,17 @@
 version: '3'
 
 services:
+  line_provider:
+      build:
+        context: line_provider
+        dockerfile: Dockerfile
+      image: line_provider:latest
+      container_name: line_provider
+      restart: always
+      ports:
+        - "8002:8002"
+      env_file:
+        - ./.env
   storage_line_provider:
     container_name: storage_line_provider
     env_file:

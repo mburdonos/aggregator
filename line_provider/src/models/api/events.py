@@ -1,23 +1,29 @@
-from pydantic import BaseModel, Field
-from typing import Optional
-from decimal import Decimal
-from datetime import datetime
 import time
+from datetime import datetime
+from decimal import Decimal
+from enum import Enum
+from typing import Optional
 
-class EventState(BaseModel):
-    NEW = 1
-    FINISHED_WIN = 2
-    FINISHED_LOSE = 3
+from pydantic import BaseModel, Field
+
+# class EventState(Enum):
+#     NEW = 1
+#     FINISHED_WIN = 2
+#     FINISHED_LOSE = 3
+#
+#     def __repr__(self):
+#         return self.value
 
 
 class EventApi(BaseModel):
-    id: Optional[int]
-    coefficient: Decimal
-    deadline: datetime
-    state_id: int
+    id: Optional[int] = Field(default=1)
+    coefficient: Decimal = Field(default=1.5)
+    deadline: datetime = Field(default=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    state_id: int = Field(default=1)
 
     def __str__(self):
         return self.id
+
 
 events = None
 # events: dict[str, Event] = {

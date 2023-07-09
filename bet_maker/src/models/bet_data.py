@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, validator
 from decimal import Decimal
+
+from pydantic import BaseModel, Field, validator
 
 
 class BetData(BaseModel):

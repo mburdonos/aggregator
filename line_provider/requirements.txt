@@ -6,3 +6,9 @@ aiohttp==3.8.4
 pytest==7.2.2
 httpx==0.23.3
 aioredis==2.0.1
+redis==4.5.5
+sqlalchemy==2.0.8
+aiormq==6.7.6
+asyncpg==0.27.0
+psycopg2-binary==2.9.6
+alembic==1.10.2

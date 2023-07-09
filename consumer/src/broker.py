@@ -1,7 +1,8 @@
 from json import loads
-import backoff
 
-from aiormq import connect as mq_connect, Connection, Channel, abc
+import backoff
+from aiormq import Channel, Connection, abc
+from aiormq import connect as mq_connect
 
 
 class RabbitMq:
@@ -17,9 +18,7 @@ class RabbitMq:
 
     @backoff.on_exception(
         backoff.expo,
-        (
-                ConnectionError
-         ),
+        (ConnectionError),
         max_time=1000,
         max_tries=10,
     )

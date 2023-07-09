@@ -2,13 +2,13 @@ import logging
 
 import uvicorn
 from api.v1 import events
+from broker.message_broker import get_rabbitmq
 from core.config import settings
+from db import storage
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from broker.message_broker import get_rabbitmq
-
-from db import storage
+from utils.base_data import write_event_state
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,12 +20,15 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
+
 @app.on_event("startup")
 async def startup():
     storage.pg_engine = create_async_engine(
         f"postgresql+asyncpg://{settings.storage_provider.user}:{settings.storage_provider.password}@{settings.storage_provider.host}:{settings.storage_provider.port}/{settings.storage_provider.dbname}",
         echo=True,
     )
+    # create defaul data in storage
+    # await write_event_state(storage.pg_engine)
     rabbitmq = get_rabbitmq()
     await rabbitmq.connect()
     logging.info("Create connections")
@@ -37,6 +40,7 @@ async def shutdown():
     rabbitmq = get_rabbitmq()
     await rabbitmq.close()
     logging.info("Closed connections")
+
 
 app.include_router(events.router, prefix="/api/v1/events", tags=["events"])
 

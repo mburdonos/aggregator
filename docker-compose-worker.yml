@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  worker1:
+      build:
+        context: consumer
+        dockerfile: Dockerfile
+      image: worker:latest
+      container_name: worker1
+      restart: always
+      env_file:
+        - ./.env

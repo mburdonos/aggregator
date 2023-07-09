@@ -5,7 +5,6 @@ from typing import Optional
 from aioredis import Connection
 from db.db_cache import AsyncRedisStorage, get_cache
 from fastapi import Depends
-
 from models.events import Event
 
 
@@ -21,6 +20,8 @@ class CacheService(AsyncRedisStorage):
 
     async def get_events(self) -> Optional[list[Event]]:
         keys = await self.get_all_keys()
+        if not keys:
+            return []
         values = await self.get_all_values(keys)
         return [Event(**loads(val)) for val in values]
 

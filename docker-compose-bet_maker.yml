@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  bet_maker:
+      build:
+        context: bet_maker
+        dockerfile: Dockerfile
+      image: bet_maker:latest
+      container_name: bet_maker
+      restart: always
+      depends_on:
+        - postgres
+        - bet_cache
+      ports:
+        - "8001:8001"
+      env_file:
+        - ./.env
+
+  postgres:
+    container_name: storage_bet
+    env_file:
+      - .env
+    hostname: ${STORAGE_BET__HOST}
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${STORAGE_BET__USER}
+      - POSTGRES_PASSWORD=${STORAGE_BET__PASSWORD}
+      - POSTGRES_DB=${STORAGE_BET__DBNAME}
+    ports:
+      - "5432:5432"
+    expose:
+      - ${STORAGE_BET__PORT}
+
+  bet_cache:
+    container_name: bet_cache
+    image: redis
+    hostname: bet_cache
+    ports:
+      - "6379:6379"
+    restart: always

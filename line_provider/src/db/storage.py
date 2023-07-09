@@ -1,7 +1,7 @@
 from typing import Optional
 
 from core.config import settings
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncConnection
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
 
 # переменная хранит объект подключения после чего передачи
 pg_engine: Optional[AsyncEngine] = None

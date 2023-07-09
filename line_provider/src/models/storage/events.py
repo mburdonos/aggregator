@@ -1,11 +1,13 @@
-from sqlalchemy import Column, DateTime, DECIMAL, String, ForeignKey
+import enum
 
 from models.storage.base_model import BaseParameters
+from sqlalchemy import DECIMAL, Column, DateTime, Enum, ForeignKey, String
 
 
+# BaseParameters,
 class EventState(BaseParameters):
     __tablename__ = "event_state"
-    status = Column(String(length=50), default="new")
+    status = Column(String(length=50))
     # NEW = 1
     # FINISHED_WIN = 2
     # FINISHED_LOSE = 3

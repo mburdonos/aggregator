@@ -1,13 +1,13 @@
 import logging
 
 import uvicorn
-from redis import asyncio as aioredis
 from aiohttp import ClientSession
 from api.v1 import bet, events
 from core.config import settings
-from db import aio_session, db_postgres, db_cache
+from db import aio_session, db_cache, db_postgres
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, ORJSONResponse
+from redis import asyncio as aioredis
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +29,9 @@ async def startup():
     )
     aio_session.aio_client = ClientSession()
     db_cache.cache = await aioredis.Redis(
-        host="localhost", port=settings.cache_bet.port, decode_responses=True
+        host=settings.cache_bet.host,
+        port=settings.cache_bet.port,
+        decode_responses=True,
     )
     # redis.exceptions.ConnectionError
     assert await db_cache.cache.ping()

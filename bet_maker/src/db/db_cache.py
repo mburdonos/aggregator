@@ -1,5 +1,6 @@
-from typing import Optional
 from hashlib import md5
+from typing import Optional
+
 from redis import asyncio as aioredis
 from redis.asyncio import Redis
 
@@ -7,6 +8,7 @@ from redis.asyncio import Redis
 class AsyncRedisStorage:
     def __init__(self, conn_cache: Redis):
         self._conn_cache = conn_cache
+
     # async def startup(self, *args, **kwargs):
     #     """Redis initialization method"""
     #     self._redis = await aioredis.from_url(*args, **kwargs)
@@ -37,7 +39,7 @@ class AsyncRedisStorage:
 
     def create_key(self, params: list) -> Optional[str]:
         if params:
-            str_key = ''.join([str(val) for val in params])
+            str_key = "".join([str(val) for val in params])
             return md5(str_key.encode("utf-8")).hexdigest()
         return None
 

@@ -1,16 +1,16 @@
+from decimal import Decimal
 from functools import lru_cache
 from typing import List, Optional
-from decimal import Decimal
 
 from db.db_postgres import DbPostgres, get_cache_conn
 from fastapi import Depends
 from models.bet import Bet
 from models.bet_data import BetData
+from models.events import Event
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from models.events import Event
 
 class BetService(DbPostgres):
     """Сервис, обеспечивающий работу с эндпоинтами фильмов."""
@@ -44,7 +44,7 @@ class BetService(DbPostgres):
             )
         self.pg_connection.commit()
 
-    async def get_all(self) -> Optional[Bet]:
+    async def get_all(self) -> Optional[list[Bet]]:
         data = await self.get_all_data(model=Bet)
         return [row[0] for row in data]
 

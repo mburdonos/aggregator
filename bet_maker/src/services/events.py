@@ -17,8 +17,6 @@ class EventsService(AioSession):
         return data
 
 
-
-
 async def events_service(
     aio_client: ClientSession = Depends(get_aio_client),
 ) -> EventsService:

@@ -1,6 +1,6 @@
 import orjson
 from models.base_bet import BaseBet
-from sqlalchemy import Column, DECIMAL, String, Integer
+from sqlalchemy import DECIMAL, Column, Integer, String
 
 
 class Bet(BaseBet):

@@ -1,12 +1,10 @@
 from logging.config import fileConfig
 
-from sqlalchemy import pool, engine_from_config
-
 from alembic import context
-
 from core.config import settings
 from models.storage.base_model import Base
-
+from models.storage.events import Event
+from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -31,6 +29,7 @@ config.set_main_option(
     "sqlalchemy.url",
     f"postgresql://{settings.storage_provider.user}:{settings.storage_provider.password}@{settings.storage_provider.host}:{settings.storage_provider.port}/{settings.storage_provider.dbname}",
 )
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -70,9 +69,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

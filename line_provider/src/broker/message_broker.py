@@ -1,5 +1,4 @@
 import aiormq
-
 from core.config import settings
 
 
